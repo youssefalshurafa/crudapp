@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  client: { flag: 0, deleteId: null },
+  client: { flag: 0, deleteId: 0 },
 };
 
 export const toggleSlice = createSlice({
@@ -17,12 +17,13 @@ export const toggleSlice = createSlice({
     resetAction: (state) => {
       state.client.flag = 0;
     },
-    deleteAction: (state, action) => {
-      state.client.deleteId = action.payload;
-    },
+    successAction: (state) => {
+      state.client.flag = 3;
+    }
+   
   },
 });
 
-export const { addAction, updateAction, resetAction } = toggleSlice.actions;
+export const { addAction, updateAction, resetAction, successAction } = toggleSlice.actions;
 
 export default toggleSlice.reducer;

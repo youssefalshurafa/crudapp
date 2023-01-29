@@ -3,10 +3,8 @@ import { useReducer } from 'react';
 import { BiPlus } from 'react-icons/bi';
 
 
-export default function AddForm({formData, setFormData, handleSubmit}) {
+export default function AddForm({ handleSubmit, handleText}) {
   const baseURL = 'http://localhost:8080/';
-
- 
 
   return (
     <div>
@@ -15,7 +13,7 @@ export default function AddForm({formData, setFormData, handleSubmit}) {
           <div className="">
             <input
               className="border w-full px-5 py-3 focus:outline-none rounded-md"
-              onChange={setFormData}
+              onChange={handleText}
               type="number"
               name="code"
               placeholder="Product's code"
@@ -24,7 +22,7 @@ export default function AddForm({formData, setFormData, handleSubmit}) {
           <div>
             <input
               className="border w-full px-5 py-3 focus:outline-none rounded-md"
-              onChange={setFormData}
+              onChange={handleText}
               type="text"
               name="category"
               placeholder="Product's category"
@@ -33,7 +31,7 @@ export default function AddForm({formData, setFormData, handleSubmit}) {
           <div>
             <input
               className="border w-full px-5 py-3 focus:outline-none rounded-md"
-              onChange={setFormData}
+              onChange={handleText}
               name="cost"
               placeholder="Product's cost"
               prefix="ج.م&nbsp; "
@@ -42,7 +40,7 @@ export default function AddForm({formData, setFormData, handleSubmit}) {
           <div>
             <input
               className="border w-full px-5 py-3 focus:outline-none rounded-md"
-              onChange={setFormData}
+              onChange={handleText}
               name="price"
               placeholder="Product's price"
               prefix="ج.م&nbsp; "
@@ -51,7 +49,7 @@ export default function AddForm({formData, setFormData, handleSubmit}) {
           <div>
             <input
               className="border w-full px-5 py-3 focus:outline-none rounded-md"
-              onChange={setFormData}
+              onChange={handleText}
               type="number"
               name="qmade"
               placeholder="Quantity made"

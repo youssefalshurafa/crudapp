@@ -1,10 +1,10 @@
 import { BiEdit, BiTrashAlt } from 'react-icons/bi';
 import { useSelector, useDispatch } from 'react-redux';
-import { updateAction } from '../redux/toggleSlice';
-import { deleteAction } from '../redux/reducer';
+import { resetAction, updateAction } from '../redux/toggleSlice';
+import { deleteAction, updateFunction } from '../redux/reducer';
 import { useParams} from 'react-router-dom'
 
-export default function Table({data,handleDelete}) {
+export default function Table({tableData, handleUpdate}) {
  
   return (
     <table className=" min-w-full table-auto">
@@ -35,14 +35,14 @@ export default function Table({data,handleDelete}) {
         </tr>
       </thead>
       <tbody className=" bg-gray-200">
-        {data?.map((obj, i) => (
-          <Tr handleDelete={handleDelete} {...obj} key={i} />
+        {tableData?.map((obj, i) => (
+          <Tr handleUpdate={handleUpdate} {...obj} key={i} />
         ))}
       </tbody>
     </table>
   );
 }
-function Tr({ _id, code, category, price, cost, qmade, handleDelete}) {
+function Tr({ _id, code, category, price, cost, qmade, handleUpdate}) {
   const dispatch = useDispatch()
 
   return (
@@ -68,10 +68,15 @@ function Tr({ _id, code, category, price, cost, qmade, handleDelete}) {
       </td>
       <td>
         <div className="flex px-16 justify-around gap-5 py-2">
-          <button onClick={() => dispatch(updateAction())} className=" cursor ">
+          <button 
+           onClick={() => { 
+            dispatch(updateAction()); 
+            dispatch(updateFunction({_id,code, category, cost, price, qmade})); 
+            handleUpdate() }} 
+            className=" cursor ">
             <BiEdit size={25} color={'rgb(34,197,94'} />
           </button>
-          <button onClick={() => {  dispatch(deleteAction(_id)); handleDelete(); } } className=" cursor ">
+          <button onClick={() => {  dispatch(deleteAction(_id)); dispatch(resetAction()); } } className=" cursor ">
             <BiTrashAlt size={25} color={'rgb(244,63,94'} />
           </button>
         </div>

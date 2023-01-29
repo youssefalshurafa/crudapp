@@ -1,35 +1,62 @@
 import Head from 'next/head';
 import { useEffect, useReducer, useState } from 'react';
-import { BiPlus } from 'react-icons/bi';
+import { BiCheck, BiPlus } from 'react-icons/bi';
 import { BiXCircle } from 'react-icons/bi';
 import Table from '../components/table';
 import { useSelector, useDispatch } from 'react-redux';
-import { addAction, resetAction } from '../redux/toggleSlice';
+import { addAction, resetAction, successAction } from '../redux/toggleSlice';
 import AddForm from '../components/addForm';
 import UpdateForm from '../components/updateProductForm';
 import api from '../pages/api/axios'
-import { deleteAction } from '../redux/reducer';
+import { useRouter } from 'next/router'
+import { resetDeleteId } from '../redux/reducer';
+import Success from '../components/success';
 
-const reducerFunction = (state, event) => {
+const reducerFunction = (state, action) => {
+ switch(action.type){
+  case 'HANDLE_INPUT':
   return {
     ...state,
-    [event.target?.name]: event.target?.value,
+    [action.field]: action.payload,
   };
+  case 'UPDATE_INPUT':
+  return action.payload
+  
+  default: 
+  return state;
+ }
+
 };
+
 export default function Home() {
+
+ 
   const [formData, setFormData] = useReducer(reducerFunction, {});
-  const [data, setData] = useState(null);
+  const [tableData, setTableData] = useState(null);
   const dispatch = useDispatch();
   const flag = useSelector((state) => state.toggleAction.client.flag);
   const baseURL = 'http://localhost:8080/';
   const deleteId = useSelector((state) => state.app.client.deleteId);
-  
+  const updateId = useSelector((state) => state.app.client.updateId);
+
+  const router = useRouter()
+  // let updated = Object.assign({}, updateFormData, updateId)
+  const handleText = (e) => 
+    { 
+      setFormData({
+      type: "HANDLE_INPUT",
+      field: e.target.name,
+      payload: e.target.value
+
+    })}
+   
+ 
   //fetching Data
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await api.get(baseURL)
-        setData(response.data)
+        setTableData(response.data)
       
       } catch (err) {
         if(err.response){
@@ -43,13 +70,16 @@ export default function Home() {
     }
     fetchData()
   },[])
+   
+  
+  
+
     // Posting data
- 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (Object.keys(formData).length == 0) return console.log('no form data');
   try {
-    const response =   await api
+    const response =  await api
     .post(baseURL, {
       code: formData.code,
       category: formData.category,
@@ -57,29 +87,60 @@ export default function Home() {
       price: formData.price,
       cost: formData.cost,
     })
-    const allData = [...data, response.data]
-    setData(allData)
+    const allData = [...tableData, response.data]
+    setTableData(allData)
+    
+    dispatch(successAction())
+    setTimeout(() => dispatch(resetAction()), 2000)
   } catch (error) {
     console.log(`Error: ${error.message}`);
   }  
   };
+
+  
  // Deleting data
- 
  const handleDelete = async () => {
-  if(deleteId){
     try { 
-      console.log(deleteId);
-       await api.delete(`/?productId=${deleteId}`)
-       const dataList = data.filter( item => item.deleteId !== deleteId)
-       setData(dataList)
+      await api.delete(`/?productId=${deleteId}`)
+      const dataList =  tableData.filter( item => item.deleteId !== deleteId)
+      setTableData(dataList)
+      const response = await api.get(baseURL)
+      setTableData(response.data)
+      router.push('/')
+      dispatch(resetDeleteId())
+      
       } catch (err) {
         console.log(`Error: ${err.message}`);
       }
-  }
- 
 } 
+  //updating data
+  useEffect( () => {
+    handleUpdate()
+  })
 
+  const handleUpdate = async () => {
+    updateId?
+    setFormData({
+      type: "UPDATE_INPUT",
+      payload: updateId
+    }) : <></>
+  }
+  const updateHandler = async () => {
 
+    try {
+      let updated = Object.assign({},updateId, formData)
+      console.log(updated);
+      await api.put(`/?productId=${formData._id}`, updated)
+    
+
+    } catch (error) {
+      console.log(`Error: ${error.message}`);
+    }
+  
+  }
+   
+ 
+ 
   return (
     <>
       <Head>
@@ -92,7 +153,8 @@ export default function Home() {
         <div className=" text-5xl font-semibold pl-5 py-8">
           Inventory Management
         </div>
-
+       <div>
+         </div>
         <div className="container mx-auto flex justify-between py-5 border-b">
           <div className=" flex w-full justify-between">
             <div>
@@ -116,9 +178,23 @@ export default function Home() {
             )}
           </div>
         </div>
-        {flag == 1 ? <AddForm formData={formData} setFormData={setFormData} handleSubmit={handleSubmit}/> : flag == 2 ? <UpdateForm /> : <></>}
-        <div className=" container mx-auto">
-          <Table data={data} setData={setData} handleDelete={handleDelete}/>
+        {flag == 1 ? <AddForm  handleSubmit={handleSubmit} handleText={handleText} /> : flag == 2 ? <UpdateForm formData={formData}  handleText={handleText}  updateHandler={updateHandler}/> : flag ==3 ? <Success message={'Product added'} /> : <></>}
+       
+        <div className="relative container mx-auto">
+        { deleteId ? (
+          <div className=' float-right w-40 h-20  p-2 space-y-1'>
+          <div>
+            <h1 className='text-xl'>Are you sure ?</h1>
+          </div>
+          <div className=' text-center space-x-4'>
+          <button className=' bg-red-500 text-white p-1 rounded-md' onClick={handleDelete}>Yes</button>
+          <button className=' bg-green-500 text-white p-1 rounded-md' onClick={() =>dispatch(resetDeleteId())}>No</button>
+       </div>
+       </div>
+       ) : <></>}
+     
+       <Table tableData={tableData} setTableData={setTableData} handleUpdate={handleUpdate}/>
+    
         </div>
       </main>
     </>
