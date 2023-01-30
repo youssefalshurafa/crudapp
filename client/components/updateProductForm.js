@@ -14,7 +14,7 @@ export default function UpdateForm({ handleText, handleUpdate, formData, updateH
             <input
               className="border w-full px-5 py-3 focus:outline-none rounded-md"
               onChange={handleText}
-              value={formData.code}
+              defaultValue={formData.code}
               type="number"
               name="code"
               placeholder="Product's code"
@@ -23,28 +23,28 @@ export default function UpdateForm({ handleText, handleUpdate, formData, updateH
           <div>
             <input
               className="border w-full px-5 py-3 focus:outline-none rounded-md"
+              defaultValue={formData.category || ''}
               onChange={handleText}
-              value={formData.category || ''}
               type="text"
               name="category"
               placeholder="Product's category"
             />
           </div>
           <div>
-            <CurrencyInput
+            <input
               className="border w-full px-5 py-3 focus:outline-none rounded-md"
               onChange={handleText}
-              value={formData.cost}
+              defaultValue={formData.cost}
               name="cost"
               placeholder="Product's cost"
               prefix="ج.م&nbsp; "
             />
           </div>
           <div>
-            <CurrencyInput
+            <input
               className="border w-full px-5 py-3 focus:outline-none rounded-md"
-              onChange={handleText}
-              value={formData.price}
+              onChange={handleText} 
+              defaultValue={formData.price}
               name="price"
               placeholder="Product's price"
               prefix="ج.م&nbsp; "
@@ -54,7 +54,7 @@ export default function UpdateForm({ handleText, handleUpdate, formData, updateH
             <input
               className="border w-full px-5 py-3 focus:outline-none rounded-md"
               onChange={handleText}
-              value={formData.qmade}
+              defaultValue={formData.qmade}
               type="number"
               name="qmade"
               placeholder="Quantity made"

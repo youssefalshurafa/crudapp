@@ -116,15 +116,16 @@ export default function Home() {
   //updating data
   useEffect( () => {
     handleUpdate()
-  })
+  },[])
 
-  const handleUpdate = async () => {
+  const handleUpdate =  () => {
     updateId?
     setFormData({
       type: "UPDATE_INPUT",
       payload: updateId
     }) : <></>
   }
+
   const updateHandler = async () => {
 
     try {
@@ -139,7 +140,7 @@ export default function Home() {
   
   }
    
- 
+ console.log(formData);
  
   return (
     <>
